@@ -8,10 +8,11 @@ JAVA=java
 JAR=jar
 endif
 
-antlr = $(top_builddir)/3rdParty/antlr/3.2/tool/antlr-3.2.jar
-antlr_depends = $(top_builddir)/3rdParty/antlr/3.2/tool/antlr-2.7.7.jar
-licenses = antlr_license.txt
-junit = $(top_builddir)/3rdParty/junit-4.6.jar
+antlr = 3rdParty/antlr/antlr-3.2.jar
+#antlr_depends = 3rdParty/antlr/antlr-2.7.7.jar
+licenses = 3rdParty/antlr/antlr_license.txt
+# TODO: Even junit 4.12 does not run on modern Java
+junit = 3rdParty/junit-4.6.jar
 
 grammars = src/org/openmodelica/corba/parser/OMCorbaDefinitions.g
 
@@ -111,11 +112,3 @@ clean:
 %.tokens: %.g
 	-$(antlr_compile) $<
 	test -f "$@"
-
-install-nomodelica:
-	cp $(antlr) $(antlr_depends) $(OMBUILDDIR)/share/omc/java
-# Don't need these; we put them in the COPYING file instead
-#	cp $(licenses) ../../../../build/share/doc/omc
-install: install-nomodelica
-	cp modelica_java.jar $(OMBUILDDIR)/share/omc/java
-
