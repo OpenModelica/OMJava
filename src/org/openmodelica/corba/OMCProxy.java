@@ -347,27 +347,19 @@ public class OMCProxy
   private void setupOmcc(String stringifiedObjectReference)
   {
     /* Can't remember why this is needed. But it is. */
-    String args[] = {null};
+    String args[] = {};
 
-    ORB orb;
-    Properties props = System.getProperties();
-    /* Disabled due to using proprietary API.
-     * If you desire a longer timeout, comment out the following section
-     * and add the JreSocketFactory to the jar-file. */
+    /* set the CORBA read timeout to a larger value as we send huge amounts of data
+     * from OMC to MDT
+     */
+    System.setProperty("com.sun.CORBA.transport.ORBTCPReadTimeouts", "1:60000:300:1");
+    java.util.Properties props = new java.util.Properties();
+    props.put("com.sun.CORBA.transport.ORBTCPReadTimeouts", "1:60000:300:1");
 
-    /*
-    if (!props.containsKey("com.sun.CORBA.transport.ORBSocketFactoryClass"))
-      props.put("com.sun.CORBA.transport.ORBSocketFactoryClass", "org.openmodelica.corba.JreSocketFactory");
-    if (!props.containsKey("com.sun.CORBA.transport.ORBConnectionSocketType"))
-      props.put("com.sun.CORBA.transport.ORBConnectionSocketType", "Socket");
-    props.put("org.openmodelica.corba.timeoutval", "100000");
-    */
-
-    orb = ORB.init(args, props);
-
+	ORB orb;
+	orb = ORB.init(args, props);
     /* Convert string to object. */
-    org.omg.CORBA.Object obj
-    = orb.string_to_object(stringifiedObjectReference);
+    org.omg.CORBA.Object obj = orb.string_to_object(stringifiedObjectReference);
     logOMCStatus("Corba IOR:" + stringifiedObjectReference);
     /* Convert object to OmcCommunication object. */
     omcc = OmcCommunicationHelper.narrow(obj);
