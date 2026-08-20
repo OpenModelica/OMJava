@@ -10,10 +10,17 @@ modelica_java.jar: $(java_sources)
 	"$(JAVAC)" -encoding utf8 -cp "$(antlr)$(sep)$(corba)" -d bin-jar $(java_sources)
 	"$(JAR)" cf modelica_java.jar $(java_sources:src/%=-C src %) $(resources:src/%=-C src %) -C bin-jar . || (rm $@ && false)
 	
-install: ../build/share/omc/java/modelica_java.jar
+# OMJava used to be built inside the OpenModelica source tree, so the default
+# keeps that layout. It is no longer part of the OpenModelica distribution;
+# point OMBUILDDIR at an OpenModelica installation to install into one.
+OMBUILDDIR ?= ../build
+javadir = $(OMBUILDDIR)/share/omc/java
 
-../build/share/omc/java/modelica_java.jar: modelica_java.jar
-	cp 3rdParty/*.jar ../build/share/omc/java/
+install: $(javadir)/modelica_java.jar
+
+$(javadir)/modelica_java.jar: modelica_java.jar
+	mkdir -p $(@D)
+	cp modelica_java.jar 3rdParty/*.jar $(licenses) $(@D)/
 	
 test: $(java_sources) 
 	rm -rf bin-test; mkdir bin-test
